@@ -12,7 +12,7 @@ impl PositiveNonzeroInteger {
         // TODO: This function shouldn't always return an `Ok`.
         match value {
             val if val < 0 => Err(CreationError::Negative),
-            val if val == 0 => Err(CreationError::Zero),
+            0 => Err(CreationError::Zero),
             _ => Ok(Self(value as u64)),
         }
     }

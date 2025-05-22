@@ -41,7 +41,49 @@ enum ParsePersonError {
 impl FromStr for Person {
     type Err = ParsePersonError;
 
-    fn from_str(s: &str) -> Result<Self, Self::Err> {}
+    fn from_str(s: &str) -> Result<Self, Self::Err> {
+        /*let values: Vec<&str> = s.split(",").map(|v| v.trim()).collect();
+        if values.len() < 2 || values.len() > 2 {
+            return Err(ParsePersonError::BadLen);
+        }
+
+        let name = values.first();
+        let age = values.get(1);
+
+        match (name, age) {
+            (Some(n), Some(a)) if !n.is_empty() => match a.parse::<u8>() {
+                Ok(a) => Ok(Person {
+                    name: n.to_string(),
+                    age: a,
+                }),
+                Err(error) => Err(ParsePersonError::ParseInt(error)),
+            },
+            _ => Err(ParsePersonError::NoName),
+        }*/
+
+        let mut iter = s.split(",").map(|v| v.trim());
+        let name = iter.next().ok_or(ParsePersonError::BadLen)?;
+        let age_str = iter.next().ok_or(ParsePersonError::BadLen)?;
+
+        if iter.next().is_some() {
+            return Err(ParsePersonError::BadLen);
+        }
+
+        if name.is_empty() {
+            return Err(ParsePersonError::NoName);
+        }
+
+        let age = age_str
+            .parse::<u8>()
+            .map_err(|err| ParsePersonError::ParseInt(err))?;
+
+        let person = Person {
+            name: name.to_string(),
+            age: age,
+        };
+
+        Ok(person)
+    }
 }
 
 fn main() {
